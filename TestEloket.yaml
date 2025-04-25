@@ -1,167 +1,259 @@
 openapi: 3.0.3
 info:
-  title: KDG Organigram API
-  description: API om Nodes en Functietitels in het Eloket te beheren vanuit KDG
+  title: E-Loket KDG - Organigram External API
+  description: API voor beheer van functies, taken en organigram in het E-Loket KDG.
   version: "1.0.0"
 servers:
-  - url: https://api.eloket.kdg.be
+  - url: https://api.kdg.be/api/OrganigramExternal
 paths:
-  /nodes:
+  /organigramFuncties:
     get:
-      summary: Haal alle organigram-nodes op
+      summary: Haal de lijst van functies op
       responses:
         '200':
-          description: Succesvolle response met lijst van nodes
+          description: Lijst van functies
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Node'
-
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Functie'
     post:
-      summary: Maak een nieuwe node aan
+      summary: Voeg een nieuwe functie toe
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Node'
+              $ref: '#/components/schemas/Functie'
       responses:
         '201':
-          description: Node succesvol aangemaakt
+          description: Functie succesvol toegevoegd
 
-  /nodes/{id}:
-    get:
-      summary: Haal een specifieke node op
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Node gevonden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
-
+  /organigramFuncties/{functieId}/taak:
     put:
-      summary: Wijzig een bestaande node
+      summary: Voeg een taak toe aan een functie
       parameters:
         - in: path
-          name: id
+          name: functieId
           required: true
           schema:
-            type: string
+            type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Node'
+              properties:
+                taakId:
+                  type: integer
       responses:
         '200':
-          description: Node succesvol gewijzigd
+          description: Taak toegevoegd aan functie
 
-    delete:
-      summary: Verwijder een node
+  /organigramFuncties/{functieId}:
+    put:
+      summary: Wijzig een functienaam
       parameters:
         - in: path
-          name: id
+          name: functieId
           required: true
           schema:
-            type: string
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                titel:
+                  type: string
+      responses:
+        '200':
+          description: Functie gewijzigd
+    delete:
+      summary: Verwijder een functie
+      parameters:
+        - in: path
+          name: functieId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Functie verwijderd
+
+  /organigramTaken:
+    get:
+      summary: Haal de lijst van taken op
+      responses:
+        '200':
+          description: Lijst van taken
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Taak'
+    post:
+      summary: Voeg een nieuwe taak toe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Taak'
+      responses:
+        '201':
+          description: Taak toegevoegd
+
+  /organigramTaken/{taakId}:
+    put:
+      summary: Wijzig een taak of activeer/deactiveer een taak
+      parameters:
+        - in: path
+          name: taakId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                taak:
+                  type: string
+                actief:
+                  type: boolean
+      responses:
+        '200':
+          description: Taak gewijzigd
+    delete:
+      summary: Verwijder een taak
+      parameters:
+        - in: path
+          name: taakId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Taak verwijderd
+
+  /organigram:
+    get:
+      summary: Haal het volledige organigram op
+      responses:
+        '200':
+          description: Lijst van nodes en medewerkers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganigramNode'
+
+  /organigram:
+    post:
+      summary: Voeg een nieuwe node toe aan het organigram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganigramNode'
+      responses:
+        '201':
+          description: Node toegevoegd
+
+  /organigram/{nodeId}:
+    put:
+      summary: Wijzig een node in het organigram
+      parameters:
+        - in: path
+          name: nodeId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganigramNode'
+      responses:
+        '200':
+          description: Node gewijzigd
+    delete:
+      summary: Verwijder een node uit het organigram
+      parameters:
+        - in: path
+          name: nodeId
+          required: true
+          schema:
+            type: integer
       responses:
         '204':
           description: Node verwijderd
 
-  /functietitels:
-    get:
-      summary: Haal alle functietitels op
-      responses:
-        '200':
-          description: Lijst van functietitels
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Functietitel'
-
-    post:
-      summary: Maak een nieuwe functietitel aan
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Functietitel'
-      responses:
-        '201':
-          description: Functietitel aangemaakt
-
-  /functietitels/{id}:
-    put:
-      summary: Wijzig een functietitel
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Functietitel'
-      responses:
-        '200':
-          description: Functietitel gewijzigd
-
-    delete:
-      summary: Verwijder een functietitel
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Functietitel verwijderd
-
 components:
   schemas:
-    Node:
+    Functie:
       type: object
       properties:
         id:
+          type: integer
+        titel:
           type: string
-          example: "n123"
-        naam:
-          type: string
-          example: "Afdelingshoofd IT"
-        parentId:
-          type: string
-          nullable: true
-          example: "n001"
-        functietitelId:
-          type: string
-          example: "ft003"
+        toegewezenTaken:
+          type: array
+          items:
+            type: string
 
-    Functietitel:
+    Taak:
       type: object
       properties:
         id:
+          type: integer
+        taak:
           type: string
-          example: "ft003"
-        naam:
+        actief:
+          type: boolean
+
+    OrganigramNode:
+      type: object
+      properties:
+        lidId:
+          type: integer
+        parentNodeId:
+          type: integer
+        gebruikerId:
+          type: integer
+        name:
           type: string
-          example: "Projectleider Digitale Transformatie"
-        beschrijving:
+        compositeId:
           type: string
-          example: "Verantwoordelijk voor de coördinatie van digitale projecten"
+        compositeParentId:
+          type: string
+        nodeType:
+          type: integer
+        toegewezenFuncties:
+          type: array
+          items:
+            type: string
+        isHoofdVerdeling:
+          type: boolean
+        parentNodeNaam:
+          type: string
+        lidNodeId:
+          type: integer
