@@ -1,0 +1,167 @@
+openapi: 3.0.3
+info:
+  title: KDG Organigram API
+  description: API om Nodes en Functietitels in het Eloket te beheren vanuit KDG
+  version: "1.0.0"
+servers:
+  - url: https://api.eloket.kdg.be
+paths:
+  /nodes:
+    get:
+      summary: Haal alle organigram-nodes op
+      responses:
+        '200':
+          description: Succesvolle response met lijst van nodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Node'
+
+    post:
+      summary: Maak een nieuwe node aan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+      responses:
+        '201':
+          description: Node succesvol aangemaakt
+
+  /nodes/{id}:
+    get:
+      summary: Haal een specifieke node op
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Node gevonden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+
+    put:
+      summary: Wijzig een bestaande node
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Node'
+      responses:
+        '200':
+          description: Node succesvol gewijzigd
+
+    delete:
+      summary: Verwijder een node
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Node verwijderd
+
+  /functietitels:
+    get:
+      summary: Haal alle functietitels op
+      responses:
+        '200':
+          description: Lijst van functietitels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Functietitel'
+
+    post:
+      summary: Maak een nieuwe functietitel aan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Functietitel'
+      responses:
+        '201':
+          description: Functietitel aangemaakt
+
+  /functietitels/{id}:
+    put:
+      summary: Wijzig een functietitel
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Functietitel'
+      responses:
+        '200':
+          description: Functietitel gewijzigd
+
+    delete:
+      summary: Verwijder een functietitel
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Functietitel verwijderd
+
+components:
+  schemas:
+    Node:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "n123"
+        naam:
+          type: string
+          example: "Afdelingshoofd IT"
+        parentId:
+          type: string
+          nullable: true
+          example: "n001"
+        functietitelId:
+          type: string
+          example: "ft003"
+
+    Functietitel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ft003"
+        naam:
+          type: string
+          example: "Projectleider Digitale Transformatie"
+        beschrijving:
+          type: string
+          example: "Verantwoordelijk voor de coördinatie van digitale projecten"
